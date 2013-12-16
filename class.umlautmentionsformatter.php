@@ -2,16 +2,23 @@
 
 class UmlautMentionsFormatter {
    public function GetMentions($String) {
-decho('MyGetMentions_class.umlautmentionsformatter.php');   
       $Mentions = array();
 
       // This one grabs mentions that start at the beginning of $String
+      // without spaces
+      $StrippedValidationRegex = '['.str_replace(' ', '', str_replace('\s', '', C('Garden.User.ValidationRegex'))).']'.C('Garden.User.ValidationLength','{3,20}');
       preg_match_all(
-         '/(?:^|[\s,\.>])@('.ValidateUsernameRegex().')\b/iu',
-//         '/(?:^|[\s,\.>])@'.C('Plugins.MentionsPlus.MentionStart').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop').'\b/i',
+         '/(?:^|[\s,\.>])@('.$StrippedValidationRegex.')\b/i',
+         $String,
+         $MatchesStripped
+      );
+      // with spaces
+      preg_match_all(
+         '/(?:^|[\s,\.>])@('.C('Plugins.MentionsPlus.MentionStart').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop').')\b/i',
          $String,
          $Matches
       );
+      $Matches = array_merge($Matches, $MatchesStripped);
       if (count($Matches) > 1) {
          $Result = array_unique($Matches[1]);
          return $Result;
@@ -26,24 +33,21 @@ decho('MyGetMentions_class.umlautmentionsformatter.php');
 
       // Handle @mentions.
       if(C('Garden.Format.Mentions')) {
-
+         // without spaces
          $StrippedValidationRegex = '['.str_replace(' ', '', str_replace('\s', '', C('Garden.User.ValidationRegex'))).']'.C('Garden.User.ValidationLength','{3,20}');
-decho('/(^|[\s,\.>])@('.$StrippedValidationRegex.')\b/i');
          $Mixed = preg_replace(
             '/(^|[\s,\.>])@('.$StrippedValidationRegex.')\b/i',
             '\1'.Anchor('@\2', '/profile/\\2'),
             $Mixed
          );
-      
-decho('/(^|[\s,\.>])@ß('.ValidateUsernameRegex().')ß/i');
+
+         // with spaces
          $Mixed = preg_replace(
-            '/(^|[\s,\.>])@ß('.ValidateUsernameRegex().')ß/i',
-            '\1'.Anchor('@ß\2ß', '/profile/\\2'),
+            '/(^|[\s,\.>])@'.C('Plugins.MentionsPlus.MentionStart').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop').'/i',
+            '\1'.Anchor('@'.C('Plugins.MentionsPlus.MentionStart').'\2'.C('Plugins.MentionsPlus.MentionStop'), '/profile/\\2'),
             $Mixed
          );
-
       }
-
       
       // Handle #hashtag searches
       if(C('Garden.Format.Hashtags')) {
