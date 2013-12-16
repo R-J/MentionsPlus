@@ -17,7 +17,7 @@ class MentionsPlusPlugin extends Gdn_Plugin {
    public function Setup() {
     // Set config settings only if they are not already set
       if (!C('Garden.User.ValidationRegex')) {
-         SaveToConfig('Garden.User.ValidationRegex', '\d\w_äöüß');
+         SaveToConfig('Garden.User.ValidationRegex', '\d\w_ äöüß');
       }
       if (!C('Garden.User.ValidationLength')) {
          SaveToConfig('Garden.User.ValidationLength', '{3,20}');
