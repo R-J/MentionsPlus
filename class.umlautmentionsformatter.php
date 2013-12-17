@@ -1,30 +1,36 @@
-<?php
+<?php if (!defined('APPLICATION')) exit();
 
 class UmlautMentionsFormatter {
    public function GetMentions($String) {
-      $Mentions = array();
-
       // This one grabs mentions that start at the beginning of $String
       // without spaces
       $StrippedValidationRegex = '['.str_replace(' ', '', str_replace('\s', '', C('Garden.User.ValidationRegex'))).']'.C('Garden.User.ValidationLength','{3,20}');
       preg_match_all(
+      // '/(?:^|[\s,\.>])@(\w{3,20})\b/i',
          '/(?:^|[\s,\.>])@('.$StrippedValidationRegex.')\b/i',
          $String,
          $MatchesStripped
       );
       // with spaces
       preg_match_all(
-         '/(?:^|[\s,\.>])@('.C('Plugins.MentionsPlus.MentionStart').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop').')\b/i',
+         '/(?:^|[\s,\.>])@'.C('Plugins.MentionsPlus.MentionStart').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop').'/i',
          $String,
          $Matches
       );
-      $Matches = array_merge($Matches, $MatchesStripped);
-      if (count($Matches) > 1) {
-         $Result = array_unique($Matches[1]);
-         return $Result;
+      $Matches[1] = array_merge($Matches[1], $MatchesStripped[1]);
+
+      $Result = array();
+      // results without spaces
+      if (count($MatchesStripped) > 1) {
+         $Result = $MatchesStripped[1];
       }
-      return array();
+      // merge results with spaces
+      if (count($Matches) > 1) {
+         $Result = array_merge($Result, $Matches[1]);
+      }
+      return array_unique($Result);
    }
+
    
    public function FormatMentions($Mixed) {
       if (!is_string($Mixed)) {
@@ -60,7 +66,7 @@ class UmlautMentionsFormatter {
       // Handle "/me does x" action statements
       if(C('Garden.Format.MeActions')) {
          $Mixed = preg_replace(
-            '/(^|[\n])(\/me)(\s[^(\n)]+)/i',
+            '/(^|[\n])(\/'.T('MeCode', 'me').')(\s[^(\n)]+)/i',
             '\1'.Wrap(Wrap('\2', 'span', array('class' => 'MeActionName')).'\3', 'span', array('class' => 'AuthorAction')),
             $Mixed
          );
