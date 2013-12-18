@@ -17,7 +17,7 @@ class MentionsPlusPlugin extends Gdn_Plugin {
    public function Setup() {
     // Set config settings only if they are not already set
       if (!C('Garden.User.ValidationRegex')) {
-         SaveToConfig('Garden.User.ValidationRegex', '\d\w_ äöüß');
+         SaveToConfig('Garden.User.ValidationRegex', '\d\w_ äöüß'); // special German characters for testing
       }
       if (!C('Garden.User.ValidationLength')) {
          SaveToConfig('Garden.User.ValidationLength', '{3,20}');
@@ -28,15 +28,13 @@ class MentionsPlusPlugin extends Gdn_Plugin {
       if (!C('Plugins.MentionsPlus.MentionStop')) {
          SaveToConfig('Plugins.MentionsPlus.MentionStop', '"');
       }
-      
-      // use custom formatter
-      require_once(PATH_PLUGINS.DS.'MentionsPlus'.DS.'class.umlautmentionsformatter.php');
    }
-   
-   public function Base_Render_Before ($Sender) {
-// TODO wrong hook - is called too often!
+
+   public function __construct() {
+      require_once(PATH_PLUGINS.DS.'MentionsPlus'.DS.'class.umlautmentionsformatter.php');
       Gdn::FactoryInstall('MentionsFormatter', 'UmlautMentionsFormatter', NULL, Gdn::FactoryInstance);
    }
+   
    
    public function SettingsController_MentionsPlus_Create($Sender) {
       $Sender->Permission('Garden.Settings.Manage');
@@ -71,3 +69,5 @@ class MentionsPlusPlugin extends Gdn_Plugin {
       $Conf->RenderAll();
    }
 }
+
+
