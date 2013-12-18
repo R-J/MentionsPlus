@@ -2,8 +2,8 @@
 
 $PluginInfo['MentionsPlus'] = array(
    'Name' => 'Mentions+',
-   'Description' => 'Mentions+ allows usage of nearly arbitrary non space characters in mentions. Mentions will use every character that is allowed for registration.',
-   'Version' => '0.1',
+   'Description' => 'Mentions+ allows usage of nearly arbitrary characters in mentions. Mentions will use every character that is allowed for registration. User names with spaces could be escaped to be used in mentions, too',
+   'Version' => '0.11',
    'RequiredApplications' => array('Vanilla' => '>=2.0.18'),
    'SettingsUrl' => '/settings/mentionsplus',
    'SettingsPermission' => 'Garden.Moderation.Manage',
@@ -34,13 +34,6 @@ class MentionsPlusPlugin extends Gdn_Plugin {
       }
    }
 
-/*
-   public function __construct() {
-      require_once(PATH_PLUGINS.DS.'MentionsPlus'.DS.'class.umlautmentionsformatter.php');
-      Gdn::FactoryInstall('MentionsFormatter', 'UmlautMentionsFormatter', NULL, Gdn::FactoryInstance);
-   }
-*/   
-   
    public function SettingsController_MentionsPlus_Create($Sender) {
       $Sender->Permission('Garden.Settings.Manage');
       $Sender->SetData('Title', T('Mentions+ Settings'));
