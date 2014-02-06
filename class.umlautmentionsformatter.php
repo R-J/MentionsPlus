@@ -3,35 +3,20 @@
 class UmlautMentionsFormatter {
    /**
     *  replaces /library/core/functions.general.php function GetMentions
-    *  code is as close to original function (taken from 2.0.18.9) as possible 
     */
    public function GetMentions($String) {
       // This one grabs mentions that start at the beginning of $String
       // without spaces
       $StrippedValidationRegex = '['.str_replace(' ', '', str_replace('\s', '', C('Garden.User.ValidationRegex', '\d\w_'))).']'.C('Garden.User.ValidationLength','{3,20}');
-      preg_match_all(
-      // '/(?:^|[\s,\.>])@(\w{3,20})\b/i',
-         '/(?:^|[\s,\.>])@('.$StrippedValidationRegex.')\b/i',
-         $String,
-         $MatchesStripped
-      );
+      $NoSpacesRegex = '('.$StrippedValidationRegex.')\b';
       // with spaces
+      $WithSpacesRegex = C('Plugins.MentionsPlus.MentionStart', '"').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop', '"');
       preg_match_all(
-         '/(?:^|[\s,\.>])@'.C('Plugins.MentionsPlus.MentionStart', '"').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop', '"').'/i',
+         '/(?:^|[\s,\.>])@('.$NoSpacesRegex.'|'.$WithSpacesRegex.')/i',
          $String,
          $Matches
       );
-
-      $Result = array();
-      // results without spaces
-      if (count($MatchesStripped) > 1) {
-         $Result = $MatchesStripped[1];
-      }
-      // merge results with spaces
-      if (count($Matches) > 1) {
-         $Result = array_merge($Result, $Matches[1]);
-      }
-      return array_unique($Result);
+      return array_filter(array_unique(array_merge($Matches[2], $Matches[3])));
    }
 
    /**
