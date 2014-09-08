@@ -12,7 +12,7 @@ class UmlautMentionsFormatter {
       // with spaces
       $WithSpacesRegex = C('Plugins.MentionsPlus.MentionStart', '"').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop', '"');
       preg_match_all(
-         '/(?:^|[\s,\.>])@('.$NoSpacesRegex.'|'.$WithSpacesRegex.')/i',
+         '/(?:^|[\s,\.>])@('.$NoSpacesRegex.'|'.$WithSpacesRegex.')/iu',
          $String,
          $Matches
       );
@@ -33,14 +33,14 @@ class UmlautMentionsFormatter {
          // without spaces
          $StrippedValidationRegex = '['.str_replace(' ', '', str_replace('\s', '', C('Garden.User.ValidationRegex'))).']'.C('Garden.User.ValidationLength','{3,20}');
          $Mixed = preg_replace(
-            '/(^|[\s,\.>])@('.$StrippedValidationRegex.')\b/i',
+            '/(^|[\s,\.>])@('.$StrippedValidationRegex.')\b/iu',
             '\1'.Anchor('@\2', '/profile/\\2'),
             $Mixed
          );
 
          // with spaces
          $Mixed = preg_replace(
-            '/(^|[\s,\.>])@'.C('Plugins.MentionsPlus.MentionStart', '"').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop', '"').'/i',
+            '/(^|[\s,\.>])@'.C('Plugins.MentionsPlus.MentionStart', '"').'('.ValidateUsernameRegex().')'.C('Plugins.MentionsPlus.MentionStop', '"').'/iu',
             '\1'.Anchor('@'.C('Plugins.MentionsPlus.MentionStart', '"').'\2'.C('Plugins.MentionsPlus.MentionStop', '"'), '/profile/\\2'),
             $Mixed
          );
@@ -49,7 +49,7 @@ class UmlautMentionsFormatter {
       // Handle #hashtag searches
       if(C('Garden.Format.Hashtags')) {
          $Mixed = preg_replace(
-            '/(^|[\s,\.>])\#([\w\-]+)(?=[\s,\.!?]|$)/i',
+            '/(^|[\s,\.>])\#([\w\-]+)(?=[\s,\.!?]|$)/iu',
             '\1'.Anchor('#\2', '/search?Search=%23\2&Mode=like').'\3',
             $Mixed
          );
@@ -57,7 +57,7 @@ class UmlautMentionsFormatter {
       // Handle "/me does x" action statements
       if(C('Garden.Format.MeActions')) {
          $Mixed = preg_replace(
-            '/(^|[\n])(\\'.C('Plugins.MentionsPlus.MeActionCode', '/me').')(\s[^(\n)]+)/i',
+            '/(^|[\n])(\\'.C('Plugins.MentionsPlus.MeActionCode', '/me').')(\s[^(\n)]+)/iu',
             '\1'.Wrap(Wrap('\2', 'span', array('class' => 'MeActionName')).'\3', 'span', array('class' => 'AuthorAction')),
             $Mixed
          );
