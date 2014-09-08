@@ -3,7 +3,7 @@
 $PluginInfo['MentionsPlus'] = array(
    'Name' => 'Mentions+',
    'Description' => 'Mentions+ allows usage of nearly arbitrary characters in mentions. Mentions will use every character that is allowed for registration. User names with spaces could be escaped to be used in mentions, too',
-   'Version' => '0.11',
+   'Version' => '0.12',
    'RequiredApplications' => array('Vanilla' => '>=2.0.18'),
    'SettingsUrl' => '/settings/mentionsplus',
    'SettingsPermission' => 'Garden.Moderation.Manage',
